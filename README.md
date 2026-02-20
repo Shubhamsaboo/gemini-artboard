@@ -9,6 +9,12 @@ A self-contained creative coding playground. Type a description, and Gemini writ
 
 ![Gemini Artboard](gemini_artboard.png)
 
+## Use Case & Extensibility
+
+Gemini Artboard is designed as a lightweight, quick-iteration creative coding playground. The focus is on a zero-dependency, instant-setup environment for experimenting with Gemini's visual generation capabilities. 
+
+Since this uses a minimal setup, the out-of-the-box generation quality is constrained by this simplicity compared to full-fledged "Vibe coding" tools. However, the architecture is completely open—you can always put more effort into building out your own prompt harness and system instructions within `index.html` if you want to push the generation quality further.
+
 
 ## Features
 
