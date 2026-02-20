@@ -7,6 +7,9 @@ A self-contained creative coding playground. Type a description, and Gemini writ
 [![Get API Key - AI Studio](https://img.shields.io/badge/Get_API_Key-AI_Studio-34a853?style=for-the-badge&logo=google&logoColor=white)](https://aistudio.google.com/)
 [![Get API Key - Vertex AI](https://img.shields.io/badge/Get_API_Key-Vertex_AI-4285f4?style=for-the-badge&logo=googlecloud&logoColor=white)](https://vertexai.google.com/)
 
+![Gemini Artboard](gemini_artboard.png)
+
+
 ## Features
 
 - **Natural language to visuals**: Describe what you want to see, Gemini writes the code
