@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemini Artboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #000000;
+      --surface: #0a0a0a;
+      --surface2: #111111;
+      --surface3: #181818;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-active: rgba(255, 255, 255, 0.12);
+      --text: #ececec;
+      --text2: #737373;
+      --text3: #444444;
+      --accent: #e0e0e0;
+      --accent-warm: #d4a574;
+      --accent-green: #34d399;
+      --accent-red: #f87171;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Subtle noise texture */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      opacity: 0.025;
+      pointer-events: none;
+      z-index: 9999;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* ══════════════════════════════ TOPBAR ══════════════════════════════ */
+    .topbar {
+      display: flex;
+      align-items: center;
+      padding: 14px 24px;
+      background: rgba(8, 8, 8, 0.95);
+      backdrop-filter: blur(24px) saturate(1.2);
+      -webkit-backdrop-filter: blur(24px) saturate(1.2);
+      border-bottom: 1px solid var(--border);
+      gap: 16px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Elegant warm shimmer line */
+    .topbar::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.04) 20%, rgba(212, 165, 116, 0.3) 40%, rgba(255, 255, 255, 0.15) 50%, rgba(212, 165, 116, 0.3) 60%, rgba(255, 255, 255, 0.04) 80%, transparent 100%);
+      animation: shimmerLine 8s ease-in-out infinite;
+      background-size: 200% 100%;
+    }
+
+    @keyframes shimmerLine {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    .topbar h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      background: linear-gradient(135deg, #ffffff 0%, #d4d4d4 40%, #d4a574 100%);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      white-space: nowrap;
+      animation: titleGlow 6s ease-in-out infinite;
+    }
+
+    @keyframes titleGlow {
+
+      0%,
+      100% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+    }
+
+    .model-select {
+      padding: 7px 14px;
+      background: rgba(18, 18, 18, 0.9);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .model-select:hover {
+      border-color: var(--border-active);
+      background: rgba(24, 24, 24, 0.95);
+    }
+
+    .model-select:focus {
+      border-color: rgba(212, 165, 116, 0.5);
+      box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.08);
+    }
+
+    .key-links {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .key-link {
+      padding: 6px 14px;
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.9);
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .key-link::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      background: rgba(255, 255, 255, 0.08);
+      transition: opacity 0.3s;
+    }
+
+    .key-link:hover::before {
+      opacity: 1;
+    }
+
+    .key-link:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .key-link.studio {
+      background: linear-gradient(135deg, #1a1a1a, #222222);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: #34d399;
+    }
+
+    .key-link.vertex {
+      background: linear-gradient(135deg, #1a1a1a, #222222);
+      border: 1px solid rgba(212, 165, 116, 0.3);
+      color: var(--accent-warm);
+    }
+
+    .key-link.github {
+      background: linear-gradient(135deg, #1a1a1a, #222222);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.75);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .key-link.github svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+
+    .key-link.github:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .api-input {
+      flex: 1;
+      max-width: 340px;
+      padding: 9px 16px;
+      background: rgba(14, 14, 14, 0.9);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      margin-left: auto;
+      transition: all 0.3s;
+    }
+
+    .api-input:focus {
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.04);
+      background: rgba(18, 18, 18, 0.95);
+    }
+
+    .api-input::placeholder {
+      color: var(--text3);
+    }
+
+    /* ══════════════════════════════ MAIN LAYOUT ══════════════════════════════ */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .chat-panel {
+      width: 38%;
+      min-width: 360px;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle warm ambient orbs */
+    .chat-panel::before {
+      content: '';
+      position: absolute;
+      top: -120px;
+      left: -80px;
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, rgba(212, 165, 116, 0.04) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      animation: orbFloat1 8s ease-in-out infinite;
+    }
+
+    .chat-panel::after {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      right: -60px;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.02) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      animation: orbFloat2 10s ease-in-out infinite;
+    }
+
+    @keyframes orbFloat1 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      50% {
+        transform: translate(30px, 40px) scale(1.1);
+      }
+    }
+
+    @keyframes orbFloat2 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      50% {
+        transform: translate(-20px, -30px) scale(1.15);
+      }
+    }
+
+    /* ══════════════════════════════ MESSAGES ══════════════════════════════ */
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .messages::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .messages::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .messages::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+    }
+
+    .messages::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .msg {
+      padding: 14px 18px;
+      border-radius: 18px;
+      font-size: 13.5px;
+      line-height: 1.65;
+      max-width: 90%;
+      word-wrap: break-word;
+      animation: msgIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes msgIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .msg.user {
+      background: linear-gradient(135deg, #1a1a1a 0%, #222222 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #fff;
+      align-self: flex-end;
+      border-bottom-right-radius: 6px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .msg.ai {
+      background: linear-gradient(145deg, rgba(14, 14, 14, 0.95), rgba(18, 18, 18, 0.85));
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      align-self: flex-start;
+      border-bottom-left-radius: 6px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .msg pre {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 10px;
+      overflow-x: auto;
+      font-size: 11.5px;
+      line-height: 1.55;
+      max-height: 300px;
+    }
+
+    .msg code {
+      font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+    }
+
+    .msg .status {
+      color: var(--accent-green);
+      font-size: 12.5px;
+      font-style: italic;
+    }
+
+    .msg .error {
+      color: var(--accent-red);
+      font-size: 12.5px;
+    }
+
+    /* ══════════════════════════════ CHIPS ══════════════════════════════ */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      background: rgba(6, 6, 6, 0.7);
+      backdrop-filter: blur(8px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .chip {
+      padding: 8px 16px;
+      border-radius: 24px;
+      background: rgba(18, 18, 18, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text2);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+    }
+
+    .chip:hover {
+      color: var(--text);
+      border-color: rgba(212, 165, 116, 0.3);
+      background: rgba(24, 24, 24, 0.95);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(212, 165, 116, 0.1);
+    }
+
+    /* ══════════════════════════════ INPUT AREA ══════════════════════════════ */
+    .input-area {
+      display: flex;
+      gap: 10px;
+      padding: 18px 24px;
+      border-top: 1px solid var(--border);
+      background: rgba(6, 6, 6, 0.8);
+      backdrop-filter: blur(12px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .input-area textarea {
+      flex: 1;
+      padding: 13px 18px;
+      background: rgba(14, 14, 14, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      resize: none;
+      outline: none;
+      min-height: 48px;
+      max-height: 120px;
+      transition: all 0.3s;
+    }
+
+    .input-area textarea:focus {
+      border-color: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.03);
+      background: rgba(18, 18, 18, 0.95);
+    }
+
+    .input-area textarea::placeholder {
+      color: var(--text3);
+    }
+
+    .send-btn {
+      padding: 13px 26px;
+      background: linear-gradient(135deg, #ffffff, #d4d4d4);
+      border: none;
+      border-radius: 14px;
+      color: #000;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+      letter-spacing: 0.2px;
+    }
+
+    .send-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 28px rgba(255, 255, 255, 0.1), 0 2px 8px rgba(255, 255, 255, 0.05);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.2;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ══════════════════════════════ CANVAS PANEL ══════════════════════════════ */
+    .canvas-panel {
+      flex: 1;
+      position: relative;
+      background: #000;
+    }
+
+    .canvas-panel canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .canvas-overlay {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .canvas-btn {
+      padding: 8px 18px;
+      border-radius: 10px;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text2);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .canvas-btn:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      color: var(--text);
+      background: rgba(18, 18, 18, 0.9);
+    }
+
+    .canvas-btn.recording {
+      border-color: rgba(234, 67, 53, 0.6);
+      color: #f87171;
+      animation: recPulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes recPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(234, 67, 53, 0);
+      }
+
+      50% {
+        box-shadow: 0 0 12px 2px rgba(234, 67, 53, 0.3);
+      }
+    }
+
+    .canvas-panel.recording-active {
+      outline: 2px solid rgba(234, 67, 53, 0.4);
+      outline-offset: -2px;
+    }
+
+    .fps-counter {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      font-size: 10px;
+      color: var(--text3);
+      font-family: 'SF Mono', 'JetBrains Mono', monospace;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      letter-spacing: 0.5px;
+    }
+
+    /* ══════════════════════════════ WELCOME ══════════════════════════════ */
+    .welcome {
+      text-align: center;
+      padding: 60px 30px;
+      color: var(--text2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      position: relative;
+    }
+
+    /* Subtle radial glow */
+    .welcome::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(212, 165, 116, 0.03) 0%, rgba(255, 255, 255, 0.01) 40%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .welcome-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 22px;
+      background: linear-gradient(145deg, rgba(30, 30, 30, 0.9), rgba(20, 20, 20, 0.9));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      margin-bottom: 28px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), 0 0 60px rgba(212, 165, 116, 0.04);
+      animation: iconFloat 4s ease-in-out infinite;
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes iconFloat {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      25% {
+        transform: translateY(-5px) rotate(1deg);
+      }
+
+      75% {
+        transform: translateY(3px) rotate(-1deg);
+      }
+    }
+
+    .welcome h2 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 0%, #b0b0b0 50%, #d4a574 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .welcome p {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--text2);
+      max-width: 290px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .welcome .badge {
+      margin-top: 24px;
+      padding: 7px 18px;
+      border-radius: 20px;
+      background: rgba(212, 165, 116, 0.06);
+      border: 1px solid rgba(212, 165, 116, 0.15);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent-warm);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ══════════════════════════════ UTILITY ══════════════════════════════ */
+    .loading {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.08);
+      border-top-color: var(--accent-warm);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Syntax Highlighting — muted elegant tones */
+    .kw {
+      color: #d4a574;
+    }
+
+    .fn {
+      color: #a0a0a0;
+    }
+
+    .str {
+      color: #86efac;
+    }
+
+    .num {
+      color: #fbbf24;
+    }
+
+    .cmt {
+      color: #3a3a3a;
+      font-style: italic;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="topbar">
+      <h1>✦ Gemini Artboard</h1>
+      <select class="model-select" id="modelSelect">
+        <option value="gemini-2.5-flash">⚡ 2.5 Flash</option>
+        <option value="gemini-2.5-pro">◆ 2.5 Pro</option>
+        <option value="gemini-3.1-pro-preview" selected>✧ 3.1 Pro</option>
+      </select>
+      <div class="key-links">
+        <a href="https://aistudio.google.com/" target="_blank" rel="noopener" class="key-link studio">🔑 AI Studio</a>
+        <a href="https://vertexai.google.com/" target="_blank" rel="noopener" class="key-link vertex">🔑 Vertex AI</a>
+        <a href="https://github.com/Shubhamsaboo/gemini-artboard" target="_blank" rel="noopener" class="key-link github"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>Source</a>
+      </div>
+      <input type="password" class="api-input" id="apiKey" placeholder="Paste your Gemini API key…" />
+    </div>
+    <div class="main">
+      <div class="chat-panel">
+        <div class="messages" id="messages">
+          <div class="welcome">
+            <div class="welcome-icon">🎨</div>
+            <h2>Describe a visual, watch it come alive</h2>
+            <p>Type what you want to see on the artboard. Gemini writes the code and renders it at 60fps.</p>
+            <div class="badge">Powered by Gemini 3.1 Pro</div>
+          </div>
+        </div>
+        <div class="chips" id="chips">
+          <div class="chip"
+            data-prompt="An aurora borealis with flowing curtains of green and purple light rippling across a starry sky, the lights react and bend toward the mouse">
+            🌌 Aurora borealis</div>
+          <div class="chip"
+            data-prompt="A realistic ocean seen from above with caustic light patterns dancing on the surface, gentle waves, and bioluminescent plankton that glow brightly near the mouse">
+            🌊 Ocean caustics</div>
+          <div class="chip"
+            data-prompt="A rotating DNA double helix drawn with two sinusoidal strands of colored spheres (one cyan, one magenta) connected by horizontal rungs, slowly spinning in the center of the canvas with a soft glow effect">
+            🧬 DNA helix</div>
+          <div class="chip"
+            data-prompt="A dark forest scene with thousands of fireflies, each blinking at its own rhythm. They swarm gently toward the mouse but scatter rapidly when it moves fast">
+            ✨ Firefly swarm</div>
+          <div class="chip"
+            data-prompt="A procedural city skyline at night with lit windows flickering randomly, rain streaks falling, puddles on the ground reflecting neon signs in pink and cyan">
+            🏙️ Neon cityscape</div>
+          <div class="chip"
+            data-prompt="A cosmic nebula with swirling gas clouds in deep purple and gold, new stars igniting as bright points of light, gravitational lensing distortion near the mouse cursor">
+            🔮 Cosmic nebula</div>
+          <div class="chip" data-prompt="A galaxy of 500 particles with rainbow trails orbiting the mouse">
+            🌀 Particle galaxy</div>
+          <div class="chip" data-prompt="Classic Matrix digital rain with glowing green characters">
+            💚 Matrix rain</div>
+          <div class="chip" data-prompt="Warp speed starfield, mouse controls direction">
+            🚀 Starfield warp</div>
+          <div class="chip" data-prompt="Electric lightning bolts arcing from top to mouse with blue glow">
+            ⚡ Lightning bolts</div>
+        </div>
+        <div class="input-area">
+          <textarea id="input" placeholder="Describe a visual…" rows="1"></textarea>
+          <button class="send-btn" id="sendBtn" onclick="send()">Send ↗</button>
+        </div>
+      </div>
+      <div class="canvas-panel">
+        <canvas id="canvas"></canvas>
+        <div class="canvas-overlay">
+          <button class="canvas-btn" onclick="clearCanvas()">✕ Clear</button>
+          <button class="canvas-btn" id="gifBtn" onclick="recordGif()">● Record GIF</button>
+        </div>
+        <div class="fps-counter" id="fps">0 FPS</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const SYSTEM = `You are a creative coding expert. Given a description, write a JavaScript draw function using the HTML5 Canvas API.
+
+IMPORTANT: Return ONLY the JavaScript function. No markdown fences, no explanations, no comments outside the function.
+
+Write exactly this signature:
+function draw(ctx, canvas, frame, mouseX, mouseY, state) { ... }
+
+Parameters:
+- ctx: CanvasRenderingContext2D (already scaled for retina)
+- canvas: object with {width, height} in CSS pixels
+- frame: integer incrementing from 0 each new generation
+- mouseX, mouseY: mouse position in CSS pixels
+- state: persistent object {}. Store particles/data here. Check if(!state.init) to initialize once.
+
+Rules:
+- Clear the canvas each frame (or use fillRect with alpha for trails)
+- Use vibrant colors and smooth 60fps animation
+- For particles use 300-800 for good density
+- Use Math.sin/cos for organic motion
+- DO NOT call requestAnimationFrame, setInterval, or access the DOM
+- The function runs automatically at 60fps`;
+
+    let history = [];
+    let drawFn = null;
+    let state = {};
+    let frame = 0;
+    let mouseX = 0, mouseY = 0;
+    let lastTime = performance.now();
+    let frameCount = 0;
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const messagesEl = document.getElementById('messages');
+    const inputEl = document.getElementById('input');
+    const sendBtn = document.getElementById('sendBtn');
+    const fpsEl = document.getElementById('fps');
+
+    function resize() {
+      const r = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = r.width * dpr;
+      canvas.height = r.height * dpr;
+      canvas.style.width = r.width + 'px';
+      canvas.style.height = r.height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    canvas.addEventListener('mousemove', e => {
+      const r = canvas.getBoundingClientRect();
+      mouseX = e.clientX - r.left; mouseY = e.clientY - r.top;
+    });
+    canvas.addEventListener('touchmove', e => {
+      const r = canvas.getBoundingClientRect();
+      mouseX = e.touches[0].clientX - r.left; mouseY = e.touches[0].clientY - r.top;
+      e.preventDefault();
+    }, { passive: false });
+
+    function animate() {
+      if (drawFn) {
+        try {
+          const w = canvas.width / (window.devicePixelRatio || 1);
+          const h = canvas.height / (window.devicePixelRatio || 1);
+          drawFn(ctx, { width: w, height: h }, frame, mouseX, mouseY, state);
+          frame++;
+        } catch (e) { }
+      }
+      frameCount++;
+      const now = performance.now();
+      if (now - lastTime >= 1000) {
+        fpsEl.textContent = frameCount + ' FPS';
+        frameCount = 0; lastTime = now;
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+    function highlight(code) {
+      return code
+        .replace(/\/\/.*/g, m => `<span class="cmt">${m}</span>`)
+        .replace(/\b(function|const|let|var|if|else|for|while|return|new|of|in|true|false|null)\b/g, '<span class="kw">$1</span>')
+        .replace(/\b(Math|Array|Object|Date|console|parseInt|parseFloat|Number|String)\b/g, '<span class="fn">$1</span>')
+        .replace(/\b(\d+\.?\d*)\b/g, '<span class="num">$1</span>');
+    }
+
+    function addMsg(role, html) {
+      const w = messagesEl.querySelector('.welcome'); if (w) w.remove();
+      const d = document.createElement('div'); d.className = `msg ${role}`;
+      d.innerHTML = html; messagesEl.appendChild(d);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return d;
+    }
+
+    function extractCode(text) {
+      let c = text.trim();
+      c = c.replace(/^```(?:javascript|js)?\s*\n?/gi, '').replace(/\n?```\s*$/gi, '');
+      return c.trim();
+    }
+
+    function tryCompile(code) {
+      code = extractCode(code);
+      if (/function\s+draw\s*\(/.test(code)) {
+        try {
+          const fn = new Function('ctx', 'canvas', 'frame', 'mouseX', 'mouseY', 'state', code + '\nreturn draw(ctx,canvas,frame,mouseX,mouseY,state);');
+          return { fn, code, err: null };
+        } catch (e) {
+          const lines = code.split('\n');
+          for (let i = lines.length; i > lines.length - 5 && i > 0; i--) {
+            const trimmed = lines.slice(0, i).join('\n');
+            try {
+              const fn2 = new Function('ctx', 'canvas', 'frame', 'mouseX', 'mouseY', 'state', trimmed + '\nreturn draw(ctx,canvas,frame,mouseX,mouseY,state);');
+              return { fn: fn2, code: trimmed, err: null };
+            } catch (e2) { }
+          }
+          return { fn: null, code, err: e.message };
+        }
+      }
+      try {
+        const wrapped = `function draw(ctx,canvas,frame,mouseX,mouseY,state){\n${code}\n}\nreturn draw(ctx,canvas,frame,mouseX,mouseY,state);`;
+        const fn = new Function('ctx', 'canvas', 'frame', 'mouseX', 'mouseY', 'state', wrapped);
+        return { fn, code, err: null };
+      } catch (e) {
+        return { fn: null, code, err: e.message };
+      }
+    }
+
+    function runCode(code) {
+      const { fn, err } = tryCompile(code);
+      if (err) return err;
+      try {
+        const dpr = window.devicePixelRatio || 1;
+        const w = canvas.width / dpr, h = canvas.height / dpr;
+        state = {}; frame = 0;
+        fn(ctx, { width: w, height: h }, 0, w / 2, h / 2, state);
+        drawFn = fn;
+        return null;
+      } catch (e) { return e.message; }
+    }
+
+    async function callGemini(apiKey, model, msgs) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: SYSTEM }] },
+          contents: msgs,
+          generationConfig: { temperature: 0.7, maxOutputTokens: 8192 }
+        })
+      });
+      if (!res.ok) throw new Error(`API ${res.status}: ${(await res.text()).substring(0, 200)}`);
+      return res;
+    }
+
+    async function readStream(response, onText) {
+      const reader = response.body.getReader();
+      const dec = new TextDecoder();
+      let buf = '', full = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += dec.decode(value, { stream: true });
+        const events = buf.split(/\r?\n\r?\n/);
+        buf = events.pop() || '';
+        for (const ev of events) {
+          for (const line of ev.split(/\r?\n/)) {
+            if (!line.startsWith('data: ')) continue;
+            const j = line.slice(6).trim();
+            if (!j || j === '[DONE]') continue;
+            try {
+              const d = JSON.parse(j);
+              const parts = d?.candidates?.[0]?.content?.parts || [];
+              for (const p of parts) {
+                if (p.text && !p.thoughtSignature) {
+                  full += p.text;
+                  onText(full);
+                }
+              }
+            } catch (e) { }
+          }
+        }
+      }
+      return full;
+    }
+
+    async function send() {
+      const apiKey = document.getElementById('apiKey').value.trim();
+      if (!apiKey) { alert('Enter your Gemini API key'); return; }
+      const model = document.getElementById('modelSelect').value;
+      const text = inputEl.value.trim();
+      if (!text) return;
+      inputEl.value = ''; inputEl.style.height = 'auto';
+      sendBtn.disabled = true;
+
+      addMsg('user', esc(text));
+
+      const userMsg = text + (drawFn ? '\n\n[Canvas has running code. Modify it based on this request. Return the COMPLETE updated draw function.]' : '');
+      history.push({ role: 'user', parts: [{ text: userMsg }] });
+
+      const div = addMsg('ai', '<span class="loading"></span><span class="status">Thinking...</span><pre style="display:none"><code></code></pre>');
+      const statusEl = div.querySelector('.status');
+      const preEl = div.querySelector('pre');
+      const codeEl = div.querySelector('code');
+
+      try {
+        const res = await callGemini(apiKey, model, history);
+        const full = await readStream(res, (txt) => {
+          statusEl.textContent = 'Writing code...';
+          preEl.style.display = 'block';
+          codeEl.innerHTML = highlight(esc(extractCode(txt)));
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+        });
+
+        if (!full.trim()) throw new Error('Empty response');
+
+        const err = runCode(full);
+        history.push({ role: 'model', parts: [{ text: full }] });
+
+        if (err) {
+          statusEl.textContent = 'Fixing error...';
+          statusEl.className = 'error';
+          history.push({ role: 'user', parts: [{ text: `Error: "${err}". Fix the draw function. Return ONLY the complete corrected function, no markdown.` }] });
+
+          const res2 = await callGemini(apiKey, model, history);
+          const full2 = await readStream(res2, (txt) => {
+            statusEl.textContent = 'Retrying...';
+            statusEl.className = 'status';
+            codeEl.innerHTML = highlight(esc(extractCode(txt)));
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+          });
+
+          const err2 = runCode(full2);
+          history.push({ role: 'model', parts: [{ text: full2 }] });
+
+          if (err2) {
+            div.querySelector('.loading')?.remove();
+            statusEl.textContent = 'Error: ' + err2;
+            statusEl.className = 'error';
+          } else {
+            div.querySelector('.loading')?.remove();
+            statusEl.textContent = 'Running on canvas';
+            statusEl.className = 'status';
+            codeEl.innerHTML = highlight(esc(extractCode(full2)));
+          }
+        } else {
+          div.querySelector('.loading')?.remove();
+          statusEl.textContent = 'Running on canvas';
+          codeEl.innerHTML = highlight(esc(extractCode(full)));
+        }
+      } catch (e) {
+        div.querySelector('.loading')?.remove();
+        statusEl.textContent = e.message;
+        statusEl.className = 'error';
+        preEl.style.display = 'none';
+      }
+
+      sendBtn.disabled = false;
+      inputEl.focus();
+    }
+
+    document.getElementById('chips').addEventListener('click', e => {
+      const c = e.target.closest('.chip');
+      if (c) { inputEl.value = c.dataset.prompt; inputEl.focus(); }
+    });
+
+    inputEl.addEventListener('input', () => {
+      inputEl.style.height = 'auto';
+      inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
+    });
+
+    inputEl.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    });
+
+    function clearCanvas() {
+      drawFn = null; state = {}; frame = 0; history = [];
+      const dpr = window.devicePixelRatio || 1;
+      ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+    }
+
+    let isRecording = false;
+    let gifWorkerUrl = null;
+
+    // Pre-fetch the gif.js worker and create a same-origin blob URL (avoids CORS)
+    async function getWorkerUrl() {
+      if (gifWorkerUrl) return gifWorkerUrl;
+      try {
+        const res = await fetch('https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js');
+        const text = await res.text();
+        const blob = new Blob([text], { type: 'application/javascript' });
+        gifWorkerUrl = URL.createObjectURL(blob);
+      } catch (e) {
+        // Fallback: try direct URL (may work on some setups)
+        gifWorkerUrl = 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js';
+      }
+      return gifWorkerUrl;
+    }
+
+    function resetGifBtn() {
+      const gifBtn = document.getElementById('gifBtn');
+      const canvasPanel = document.querySelector('.canvas-panel');
+      gifBtn.textContent = '● Record GIF';
+      gifBtn.classList.remove('recording');
+      canvasPanel.classList.remove('recording-active');
+      isRecording = false;
+    }
+
+    async function recordGif() {
+      if (!drawFn) { alert('Nothing on canvas to record'); return; }
+      if (isRecording) return;
+      isRecording = true;
+
+      const gifBtn = document.getElementById('gifBtn');
+      const canvasPanel = document.querySelector('.canvas-panel');
+      gifBtn.classList.add('recording');
+      canvasPanel.classList.add('recording-active');
+      gifBtn.textContent = '⏳ Preparing...';
+
+      const workerUrl = await getWorkerUrl();
+
+      const duration = 3;
+      const fps = 12;
+      const totalFrames = duration * fps;
+      const delay = Math.round(1000 / fps);
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.width / dpr;
+      const h = canvas.height / dpr;
+
+      // Downscale for reasonable GIF size (max 480px wide)
+      const maxW = 480;
+      const scale = Math.min(1, maxW / w);
+      const gw = Math.round(w * scale);
+      const gh = Math.round(h * scale);
+
+      const offscreen = document.createElement('canvas');
+      offscreen.width = gw;
+      offscreen.height = gh;
+      const offCtx = offscreen.getContext('2d');
+
+      const gif = new GIF({
+        workers: 2,
+        quality: 10,
+        width: gw,
+        height: gh,
+        workerScript: workerUrl
+      });
+
+      gifBtn.textContent = '● Recording 0%';
+
+      // Capture frames
+      for (let i = 0; i < totalFrames; i++) {
+        await new Promise(r => setTimeout(r, delay));
+        offCtx.clearRect(0, 0, gw, gh);
+        offCtx.drawImage(canvas, 0, 0, gw, gh);
+        gif.addFrame(offCtx, { copy: true, delay: delay });
+        const pct = Math.round(((i + 1) / totalFrames) * 100);
+        gifBtn.textContent = `● Recording ${pct}%`;
+      }
+
+      gifBtn.textContent = '⏳ Encoding...';
+
+      // Timeout failsafe — if encoding takes more than 15s, abort
+      const timeout = setTimeout(() => {
+        gif.abort();
+        resetGifBtn();
+        alert('GIF encoding timed out. Try again.');
+      }, 15000);
+
+      gif.on('finished', blob => {
+        clearTimeout(timeout);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.download = 'gemini-artboard.gif';
+        a.href = url;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        resetGifBtn();
+      });
+
+      gif.render();
+    }
+
+    // Pre-warm the worker on page load
+    getWorkerUrl();
+
+    if (location.hash) document.getElementById('apiKey').value = location.hash.slice(1);
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
+</body>
+
+</html>
